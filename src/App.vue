@@ -1,6 +1,7 @@
 <template>
     <v-app>
         <router-view></router-view>
+        <link href="https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css" rel="stylesheet">
     </v-app>
 </template>
 

@@ -28,7 +28,14 @@
                 </v-btn>
             </v-card-title>
 
-            <v-data-table :headers="headers" :items="priorityFilter" :search="search">
+            <v-data-table 
+                :headers="headers" 
+                :items="priorityFilter" 
+                :search="search"
+                :expanded.sync="expanded"
+                :single-select="singleSelect"
+                item-key="note"
+                show-expand>
                 <template v-slot:[`item.actions`]="{ item }">
                     <v-icon small color="red" class="mr-2" @click="editItem(item)">
                         mdi-pencil
@@ -36,6 +43,22 @@
                     <v-icon small color="blue" @click="deleteItem(item)">
                         mdi-delete
                     </v-icon>
+                </template>
+                <template v-slot:[`item.checkBox`]="{ item }">
+                    <input 
+                        small
+                        type="checkbox" 
+                        id="checkBox" 
+                        v-model="checked"
+                        @click="delList(item)">
+                </template>
+                <template v-slot:expanded-item="{ headers, item }">
+                    <td align="start" :colspan="headers.length">
+                        <v-title>
+                            <h4>Note: </h4>
+                        </v-title>
+                        {{ item.note }}
+                    </td>
                 </template>
             </v-data-table>
         </v-card>
@@ -77,6 +100,22 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
+
+        <v-dialog >
+            <v-card >
+                <v-card-title>
+                    <h2>Delete List</h2>
+                </v-card-title>
+                <v-container>
+                    <!-- <ul>
+                        <li v-for="select in selected" :key="select">
+                            {{ select.task }}
+                        </li>
+                    </ul> -->
+                </v-container>
+            </v-card>
+        </v-dialog>
+
     </v-main>
 </template>
 
@@ -89,6 +128,13 @@ export default {
             dialog: false,
             temp: null,
             filters: "None",
+            selected: [
+                {
+                    task: null,
+                    priority: null,
+                    note: null,
+                }
+            ],
             headers: [
                 {
                     text: "Task",
@@ -98,6 +144,7 @@ export default {
                 },
                 { text: "Priority", value: "priority" },
                 { text: "Actions", value: "actions" },
+                { text: "", value: "checkBox"},
             ],
             todos: [
                 {
@@ -160,6 +207,10 @@ export default {
                 let index = this.findIndx(item)
                 this.todos.splice(index, 1);
             }
+        },
+        delList(item) {
+            let index = this.findIndx(item)
+            this.todos.push(this.selected[index]);
         }
     },
     computed: {
